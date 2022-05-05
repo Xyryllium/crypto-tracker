@@ -1,0 +1,31 @@
+{
+  "dependencies": {
+    "axios": "^0.27.2",
+    "discord.js": "^13.6.0",
+    "dotenv": "^16.0.0",
+    "node-fetch": "^2.6.7"
+  },
+  "name": "position-and-nft-tracker",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Xyryl Aranza",
+  "license": "ISC",
+  "description": "A crypto tracker for long/short position at Binance Leaderboards and NFT Floor Tracker at Solana Blockchain",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Xyryllium/crypto-tracker.git"
+  },
+  "keywords": [
+    "crypto",
+    "nodejs",
+    "discord"
+  ],
+  "bugs": {
+    "url": "https://github.com/Xyryllium/crypto-tracker/issues"
+  },
+  "homepage": "https://github.com/Xyryllium/crypto-tracker#readme"
+}
