@@ -116,10 +116,10 @@ client.on("messageCreate", (message) => {
             let unixTimestamp = Date.now();
             let date =  new Date(unixTimestamp).toString();
 
-            const exampleEmbed = new MessageEmbed();
-              exampleEmbed.setDescription(`Closed Position of ${symbol} of ${nickName}`);
+            const leaderboardEmbed = new MessageEmbed();
+            leaderboardEmbed.setDescription(`Closed Position of ${symbol} of ${nickName}`);
 
-            exampleEmbed
+            leaderboardEmbed
               .setColor("#0099ff")
               .setTitle("Binance Leaderboard")
               .addFields(
@@ -132,7 +132,7 @@ client.on("messageCreate", (message) => {
                 { name: "Date Closed:", value: date }
               )
               .setTimestamp();
-            message.channel.send({ embeds: [exampleEmbed] });
+            message.channel.send({ embeds: [leaderboardEmbed] });
           });
         }
 
@@ -160,10 +160,10 @@ client.on("messageCreate", (message) => {
             let unixTimestamp = Date.now();
             let date =  new Date(unixTimestamp).toString();
 
-            const exampleEmbed = new MessageEmbed();
-              exampleEmbed.setDescription(`Closed Position of ${symbol} of ${nickName}`);
+            const leaderboardEmbed = new MessageEmbed();
+            leaderboardEmbed.setDescription(`Closed Position of ${symbol} of ${nickName}`);
 
-            exampleEmbed
+            leaderboardEmbed
               .setColor("#0099ff")
               .setTitle("Binance Leaderboard")
               .addFields(
@@ -176,7 +176,7 @@ client.on("messageCreate", (message) => {
                 { name: "Date Closed:", value: date }
               )
               .setTimestamp();
-            message.channel.send({ embeds: [exampleEmbed] });
+            message.channel.send({ embeds: [leaderboardEmbed] });
           });
         }
         pastData = data;
@@ -193,12 +193,12 @@ client.on("messageCreate", (message) => {
           let unixTimestamp = data[index].updateTimeStamp;
           let date = new Date(unixTimestamp).toString();
 
-          const exampleEmbed = new MessageEmbed();
+          const leaderboardEmbed = new MessageEmbed();
           if (data[index].amount < 0)
-            exampleEmbed.setDescription("Open Short Position of " + nickName);
-          else exampleEmbed.setDescription("Open Long Position of " + nickName);
+          leaderboardEmbed.setDescription("Open Short Position of " + nickName);
+          else leaderboardEmbed.setDescription("Open Long Position of " + nickName);
 
-          exampleEmbed
+          leaderboardEmbed
             .setColor("#0099ff")
             .setTitle("Binance Leaderboard")
             .addFields(
@@ -212,7 +212,7 @@ client.on("messageCreate", (message) => {
             )
             .setTimestamp();
           if (pastDataLength != newDataLength)
-            message.channel.send({ embeds: [exampleEmbed] });
+            message.channel.send({ embeds: [leaderboardEmbed] });
         });
 
         pastDataLength = newDataLength;

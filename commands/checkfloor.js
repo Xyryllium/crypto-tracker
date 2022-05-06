@@ -51,9 +51,9 @@ module.exports = {
             (response.data.volumeAll / 1000000000).toFixed(2).toString() +
             " SOL";
 
-          const exampleEmbed = new MessageEmbed();
+          const floorEmbed = new MessageEmbed();
 
-          exampleEmbed
+          floorEmbed
             .setThumbnail(response.data.image)
             .setColor("#0099ff")
             .setTitle(response.data.name)
@@ -65,7 +65,7 @@ module.exports = {
             )
             .setTimestamp();
 
-          interaction.reply({ embeds: [exampleEmbed] });
+          interaction.reply({ embeds: [floorEmbed] });
         })
         .catch(function (error) {
           interaction.reply({ content: "Collection Not Found / Slug Name is Wrong" });
@@ -95,9 +95,9 @@ module.exports = {
             response.data.collection.stats.total_volume.toFixed(2).toString() +
             " ETH";
 
-          const exampleEmbed = new MessageEmbed();
+          const floorEmbed = new MessageEmbed();
 
-          exampleEmbed
+          floorEmbed
             .setThumbnail(response.data.collection.image_url)
             .setColor("#0099ff")
             .setTitle(response.data.collection.name)
@@ -110,7 +110,7 @@ module.exports = {
             )
             .setTimestamp();
 
-          interaction.reply({ embeds: [exampleEmbed] });
+          interaction.reply({ embeds: [floorEmbed] });
         })
         .catch(function (error) {
           interaction.reply({ content: "Collection Not Found / Slug Name is Wrong" });
