@@ -4,6 +4,7 @@ const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
 const { Client, Intents, MessageEmbed, Collection } = require("discord.js"); //import discord.js
 const axios = require("axios");
+const keepAlive = require('./server');
 const client = new Client({
   intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
 });
@@ -29,7 +30,7 @@ client.on("ready", () => {
 
   const rest = new REST({
     version: "9",
-  }).setToken(process.env.CLIENT_TOKEN_DEV);
+  }).setToken(process.env.CLIENT_TOKEN);
 
   (async () => {
     try {
@@ -92,19 +93,94 @@ client.on("messageCreate", (message) => {
     };
 
     let flag = 0;
+    let pastDataLength = 0;
+    let pastData = [];
     async function main() {
       let position = await getUserPosition();
       let info = await getUserInfo();
       if (position.data.otherPositionRetList.length == 0) {
-        console.log("no position found");
+        pastDataLength = position.data.otherPositionRetList.length; 
+        
+        if (pastData.length != 0) {
+          let closePos = pastData.filter(
+            (oldData) => !position.data.otherPositionRetList.find((a) => oldData.symbol === a.symbol)
+          );
+
+          closePos.forEach((element, index, array) => {
+            let symbol = closePos[index].symbol;
+            let entryPrice = closePos[index].entryPrice.toString();
+            let markPrice = closePos[index].markPrice.toString();
+            let pnl = closePos[index].pnl.toString();
+            let roe = closePos[index].roe.toString();
+            let amount = closePos[index].amount.toString();
+            let unixTimestamp = Date.now();
+            let date =  new Date(unixTimestamp).toString();
+
+            const exampleEmbed = new MessageEmbed();
+              exampleEmbed.setDescription(`Closed Position of ${symbol} of ${nickName}`);
+
+            exampleEmbed
+              .setColor("#0099ff")
+              .setTitle("Binance Leaderboard")
+              .addFields(
+                { name: "Symbol", value: symbol },
+                { name: "Entry Price", value: entryPrice },
+                { name: "Mark Price", value: markPrice },
+                { name: "PNL", value: pnl },
+                { name: "ROE", value: roe },
+                { name: "Amount", value: amount },
+                { name: "Date Closed:", value: date }
+              )
+              .setTimestamp();
+            message.channel.send({ embeds: [exampleEmbed] });
+          });
+        }
+
         if (flag === 0) {
-          message.channel.send("No Position Found!");
+          pastData = [];
+          message.channel.send(`No Position Found For ${info.data.nickName}`);
           flag = 1;
         }
         main();
       } else {
         flag = 0;
         let data = position.data.otherPositionRetList;
+        if (pastData.length != 0) {
+          let closePos = pastData.filter(
+            (oldData) => !data.find((a) => oldData.symbol === a.symbol)
+          );
+
+          closePos.forEach((element, index, array) => {
+            let symbol = closePos[index].symbol;
+            let entryPrice = closePos[index].entryPrice.toString();
+            let markPrice = closePos[index].markPrice.toString();
+            let pnl = closePos[index].pnl.toString();
+            let roe = closePos[index].roe.toString();
+            let amount = closePos[index].amount.toString();
+            let unixTimestamp = Date.now();
+            let date =  new Date(unixTimestamp).toString();
+
+            const exampleEmbed = new MessageEmbed();
+              exampleEmbed.setDescription(`Closed Position of ${symbol} of ${nickName}`);
+
+            exampleEmbed
+              .setColor("#0099ff")
+              .setTitle("Binance Leaderboard")
+              .addFields(
+                { name: "Symbol", value: symbol },
+                { name: "Entry Price", value: entryPrice },
+                { name: "Mark Price", value: markPrice },
+                { name: "PNL", value: pnl },
+                { name: "ROE", value: roe },
+                { name: "Amount", value: amount },
+                { name: "Date Closed:", value: date }
+              )
+              .setTimestamp();
+            message.channel.send({ embeds: [exampleEmbed] });
+          });
+        }
+        pastData = data;
+        let newDataLength = data.length;
         data.forEach((element, index, array) => {
           nickName = info.data.nickName;
           console.log("[ OK ] Got update [" + new Date().toGMTString() + "]");
@@ -135,12 +211,12 @@ client.on("messageCreate", (message) => {
               { name: "Date Opened:", value: date }
             )
             .setTimestamp();
-
-          message.channel.send({ embeds: [exampleEmbed] });
+          if (pastDataLength != newDataLength)
+            message.channel.send({ embeds: [exampleEmbed] });
         });
-        setTimeout(function () {
-          main();
-        }, 5000);
+
+        pastDataLength = newDataLength;
+        main();
       }
     }
 

@@ -34,7 +34,7 @@ module.exports = {
       var config = {
         method: "get",
         url:
-          "https://api-mainnet.magiceden.dev/v2/collections/" +
+          "https://api-mainnet.magiceden.io/v2/collections/" +
           interaction.options.getString("collection"),
         headers: {},
       };
