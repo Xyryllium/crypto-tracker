@@ -33,7 +33,7 @@ module.exports = {
     if (interaction.options.getString("blockchain") == "sol") {
       var config = {
         method: "get",
-        url: "https://api-mainnet.magiceden.io/all_collections_with_escrow_data?edge_cache=true",
+        url: "https://api-mainnet.magiceden.io/all_collections_with_escrow_data",
         headers: {},
       };
 
@@ -43,10 +43,6 @@ module.exports = {
 
           let collection;
 
-          collections.forEach(function (collection) {
-            collection.name = collection.name.toLowerCase();
-          });
-
           let search = interaction.options.getString("collection");
 
           collection = collections.find((element) => {
@@ -54,6 +50,18 @@ module.exports = {
               if (element.isDerivative === false) return true;
             }
           });
+    
+          if(!collection){
+            collections.forEach(function (collection) {
+              collection.name = collection.name.toLowerCase();
+            });
+        
+            collection = collections.find((element) => {
+              if (element.name.includes(search)) {
+                if (element.isDerivative === false) return true;
+              }
+            });
+          }
 
           if (collection == undefined) {
             collection = collections.find((element) => {
@@ -103,8 +111,7 @@ module.exports = {
                     { name: "Discord", value: collection.discord },
                   )
                   .setTimestamp();
-
-                interaction.reply({ embeds: [floorEmbed] });
+                 interaction.editReply({ embeds: [floorEmbed] });
               })
               .catch(function (error) {
                 interaction.reply({
@@ -120,7 +127,7 @@ module.exports = {
         .catch(function (error) {
           console.log(error);
           interaction.reply({
-            content: "Collection Not Found / Slug Name is Wrong",
+            content: "Magic Eden API didn't respond.",
           });
         });
     } else if (interaction.options.getString("blockchain") == "eth") {

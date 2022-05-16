@@ -62,7 +62,8 @@ client.on("interactionCreate", async (interaction) => {
   if (!command) return;
 
   try {
-    await command.execute(interaction);
+    await interaction.deferReply();
+    command.execute(interaction);
   } catch (err) {
     if (err) console.error(err);
     await interaction.reply({
