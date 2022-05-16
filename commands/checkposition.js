@@ -34,7 +34,7 @@ module.exports = {
     async function main() {
       let position = await getUserPosition();
       let info = await getUserInfo();
-      if (position.data.otherPositionRetList.length == 0) {
+      if (position.data.otherPositionRetList == null || position.data.otherPositionRetList.length == 0) { 
         interaction.reply({
           content: `No Position Found For ${info.data.nickName}!`,
         });

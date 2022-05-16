@@ -98,8 +98,11 @@ client.on("messageCreate", (message) => {
     async function main() {
       let position = await getUserPosition();
       let info = await getUserInfo();
-      if (position.data.otherPositionRetList.length == 0) {
-        pastDataLength = position.data.otherPositionRetList.length; 
+      //let isKeyPresent = position.hasOwnProperty('data')
+      
+      if (position.data.otherPositionRetList == null || position.data.otherPositionRetList.length == 0) {
+        if(position.data.otherPositionRetList != null)
+          pastDataLength = position.data.otherPositionRetList.length; 
         
         if (pastData.length != 0) {
           let closePos = pastData.filter(
@@ -182,7 +185,10 @@ client.on("messageCreate", (message) => {
         pastData = data;
         let newDataLength = data.length;
         data.forEach((element, index, array) => {
-          nickName = info.data.nickName;
+          if(info.data)
+            nickName = info.data.nickName;
+          else
+            nickName = 'Undefined User';
           console.log("[ OK ] Got update [" + new Date().toGMTString() + "]");
           let symbol = data[index].symbol;
           let entryPrice = data[index].entryPrice.toString();
