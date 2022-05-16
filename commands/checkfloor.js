@@ -33,42 +33,95 @@ module.exports = {
     if (interaction.options.getString("blockchain") == "sol") {
       var config = {
         method: "get",
-        url:
-          "https://api-mainnet.magiceden.io/v2/collections/" +
-          interaction.options.getString("collection"),
+        url: "https://api-mainnet.magiceden.io/all_collections_with_escrow_data?edge_cache=true",
         headers: {},
       };
 
       axios(config)
         .then(function (response) {
-          let floorPrice =
-            (response.data.floorPrice / 1000000000).toString() + " SOL";
-          let listedCount = response.data.listedCount.toString();
-          let avgPrice24hr =
-            (response.data.avgPrice24hr / 1000000000).toFixed(2).toString() +
-            " SOL";
-          let volumeAll =
-            (response.data.volumeAll / 1000000000).toFixed(2).toString() +
-            " SOL";
+          let collections = response.data.collections;
 
-          const floorEmbed = new MessageEmbed();
+          let collection;
 
-          floorEmbed
-            .setThumbnail(response.data.image)
-            .setColor("#0099ff")
-            .setTitle(response.data.name)
-            .addFields(
-              { name: "Floor Price", value: floorPrice },
-              { name: "Listed Count", value: listedCount },
-              { name: "Average Sale Price", value: avgPrice24hr },
-              { name: "Volume", value: volumeAll }
-            )
-            .setTimestamp();
+          collections.forEach(function (collection) {
+            collection.name = collection.name.toLowerCase();
+          });
 
-          interaction.reply({ embeds: [floorEmbed] });
+          let search = interaction.options.getString("collection");
+
+          collection = collections.find((element) => {
+            if (element.name.includes(search)) {
+              if (element.isDerivative === false) return true;
+            }
+          });
+
+          if (collection == undefined) {
+            collection = collections.find((element) => {
+              if (element.name.includes(search)) {
+                return true;
+              }
+            });
+          }
+
+          if (collection != undefined) {
+            let collectionSymbol = collection.symbol;
+
+            var configForCollection = {
+              method: "get",
+              url:
+                "https://api-mainnet.magiceden.io/v2/collections/" +
+                collectionSymbol,
+              headers: {},
+            };
+
+            axios(configForCollection)
+              .then(function (response) {
+                let collectionInfo = response.data;
+                let floorPrice =
+                  (collectionInfo.floorPrice / 1000000000).toString() + " SOL";
+                let listedCount = collectionInfo.listedCount.toString();
+                let avgPrice24hr =
+                  (collectionInfo.avgPrice24hr / 1000000000)
+                    .toFixed(2)
+                    .toString() + " SOL";
+                let volumeAll =
+                  (collectionInfo.volumeAll / 1000000000).toFixed(2).toString() +
+                  " SOL";
+
+                const floorEmbed = new MessageEmbed();
+
+                floorEmbed
+                  .setThumbnail(collectionInfo.image)
+                  .setColor("#0099ff")
+                  .setTitle(collectionInfo.name)
+                  .addFields(
+                    { name: "Floor Price", value: floorPrice },
+                    { name: "Listed Count", value: listedCount },
+                    { name: "Average Sale Price", value: avgPrice24hr },
+                    { name: "Volume", value: volumeAll },
+                    { name: "Magic Eden", value: `https://magiceden.io/marketplace/${collectionInfo.symbol}` },
+                    { name: "Discord", value: collection.discord },
+                  )
+                  .setTimestamp();
+
+                interaction.reply({ embeds: [floorEmbed] });
+              })
+              .catch(function (error) {
+                interaction.reply({
+                  content: "Collection Not Found / Slug Name is Wrong",
+                });
+              });
+          } else {
+            interaction.reply({
+              content: "Collection Not Found",
+            });
+          }
         })
         .catch(function (error) {
-          interaction.reply({ content: "Collection Not Found / Slug Name is Wrong" });
+          console.log(error);
+          interaction.reply({
+            content: "Collection Not Found / Slug Name is Wrong",
+          });
         });
     } else if (interaction.options.getString("blockchain") == "eth") {
       var config = {
@@ -83,8 +136,7 @@ module.exports = {
         .then(function (response) {
           let floorPrice =
             response.data.collection.stats.floor_price.toString() + " ETH";
-          let numOwners =
-            response.data.collection.stats.num_owners.toString();
+          let numOwners = response.data.collection.stats.num_owners.toString();
           let totalSupply =
             response.data.collection.stats.total_supply.toString();
           let avgPrice24hr =
@@ -113,7 +165,9 @@ module.exports = {
           interaction.reply({ embeds: [floorEmbed] });
         })
         .catch(function (error) {
-          interaction.reply({ content: "Collection Not Found / Slug Name is Wrong" });
+          interaction.reply({
+            content: "Collection Not Found / Slug Name is Wrong",
+          });
         });
     }
   },
